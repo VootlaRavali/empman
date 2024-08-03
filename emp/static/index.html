@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Management</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">Employee Management</h1>
+        <div id="employeeForm">
+            <h2>Add / Update Employee</h2>
+            <form id="form">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" class="form-control" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="position">Position</label>
+                    <input type="text" class="form-control" id="position" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+        <div id="employeeList" class="mt-5">
+            <h2>Employee List</h2>
+            <ul class="list-group" id="list"></ul>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const position = document.getElementById('position').value;
+
+            fetch('/api/employees', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name, email, position })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Employee added successfully');
+                loadEmployees();
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        function loadEmployees() {
+            fetch('/api/employees')
+                .then(response => response.json())
+                .then(data => {
+                    const list = document.getElementById('list');
+                    list.innerHTML = '';
+                    data.forEach(employee => {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item';
+                        li.textContent = `${employee.name} - ${employee.email} - ${employee.position}`;
+                        list.appendChild(li);
+                    });
+                });
+        }
+
+        loadEmployees();
+    </script>
+</body>
+</html>
